@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic NFC</title>
+    <style>
+        /* Ослепительно белый фон */
+        body { 
+            background-color: #ffffff; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            font-family: -apple-system, sans-serif;
+            text-align: center;
+            cursor: pointer; /* Показывает, что на экран можно нажать */
+        }
+        
+        .icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        h1 { font-size: 18px; color: #888; font-weight: 400; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body onclick="activateMagic()">
+
+    <div class="icon">✨</div>
+    <h1>Нажмите на экран для активации</h1>
+
+    <audio id="magicSound" preload="auto">
+        <source src="https://www.soundjay.com/magic/magic-chime-01.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function activateMagic() {
+            const audio = document.getElementById("magicSound");
+            const youtubeURL = "youtube://www.youtube.com/watch?v=S2r8_7lK_yY";
+            const fallbackURL = "https://www.youtube.com/watch?v=S2r8_7lK_yY";
+
+            // 1. Играем звук
+            audio.play();
+
+            // 2. Ждем 0.8 секунды, пока прозвенит колокольчик, и переходим
+            setTimeout(() => {
+                window.location.href = youtubeURL;
+                
+                // Если через секунду мы все еще здесь (нет приложения YouTube), открываем в браузере
+                setTimeout(() => {
+                    if (!document.hidden) {
+                        window.location.href = fallbackURL;
+                    }
+                }, 1000);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
