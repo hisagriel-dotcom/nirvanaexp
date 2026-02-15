@@ -5,58 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title> </title>
     <style>
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #ffffff; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            font-family: -apple-system, sans-serif; cursor: pointer;
+        body { 
+            background-color: #ffffff; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            font-family: -apple-system, sans-serif;
+            cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
-        .ui { text-align: center; transition: opacity 0.5s; }
-        .icon { font-size: 80px; margin-bottom: 10px; }
-        h1 { font-size: 18px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
-        video { display: none; width: 100%; height: 100%; object-fit: cover; }
+        .icon { font-size: 80px; margin-bottom: 20px; transition: transform 0.2s; }
+        .icon:active { transform: scale(0.9); }
+        h1 { font-size: 20px; color: #333; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        p { color: #ccc; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
-<body onclick="playMagic()">
+<body onclick="launch()">
 
-    <div class="ui" id="ui">
-        <div class="icon">✨</div>
-        <h1>Активировать</h1>
-    </div>
-
-    <video id="v" playsinline loop>
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-beautiful-aerial-view-of-a-sunset-over-the-ocean-13308-large.mp4" type="video/mp4">
-    </video>
+    <div class="icon">✨</div>
+    <h1>Активировать</h1>
+    <p>(нажмите на экран)</p>
 
     <script>
-        function playMagic() {
-            const v = document.getElementById('v');
-            const ui = document.getElementById('ui');
+        function launch() {
+            // 1. Мгновенный магический звук (синтез)
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } catch (e) { console.log(e); }
 
-            // 1. Генерация магического звука
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.6);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
-
-            // 2. Скрываем текст и запускаем видео
-            ui.style.opacity = '0';
-            setTimeout(() => { ui.style.display = 'none'; }, 500);
+            // 2. Ссылка на видео (ID твоего видео про закат)
+            const vID = "S2r8_7lK_yY";
             
-            v.style.display = 'block';
-            v.play();
+            // Пытаемся открыть сразу в полноэкранном режиме приложения
+            // Используем специальную схему для iOS
+            const appUrl = "vnd.youtube:" + vID + "?vndclient=mv-google&vndv=1";
+            const webUrl = "https://www.youtube.com/watch?v=" + vID;
 
-            // 3. Хак для раскрытия на весь экран в iOS
-            if (v.webkitEnterFullscreen) {
-                v.webkitEnterFullscreen();
-            } else if (v.requestFullscreen) {
-                v.requestFullscreen();
-            }
+            // Переход
+            window.location.href = appUrl;
+
+            // Если приложение не открылось за полсекунды, открываем браузерную версию
+            setTimeout(function() {
+                if (!document.hidden) {
+                    window.location.replace(webUrl);
+                }
+            }, 500);
         }
     </script>
 </body>
