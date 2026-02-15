@@ -3,65 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> </title>
+    <title>Nirvana System</title>
     <style>
-        body { 
-            background-color: #ffffff; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            font-family: -apple-system, sans-serif;
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; font-family: -apple-system, sans-serif;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            /* Начальный белый фон для яркости */
+            background: #ffffff;
+            transition: background 1s ease;
         }
-        .icon { font-size: 80px; margin-bottom: 20px; transition: transform 0.2s; }
-        .icon:active { transform: scale(0.9); }
-        h1 { font-size: 20px; color: #333; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
-        p { color: #ccc; margin-top: 10px; font-size: 14px; }
+
+        /* Анимированный градиент */
+        .gradient-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            display: none; /* Скрыт до активации */
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .ui-content {
+            z-index: 10;
+            text-align: center;
+            color: #333;
+            transition: opacity 1s ease;
+        }
+
+        h1 { font-weight: 200; font-size: 28px; letter-spacing: 5px; margin: 0; }
+        p { font-size: 12px; color: #aaa; letter-spacing: 2px; margin-top: 15px; }
+
+        /* Эффект свечения текста */
+        .active-text { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
     </style>
 </head>
-<body onclick="launch()">
+<body onclick="activateNirvana()">
 
-    <div class="icon">✨</div>
-    <h1>Активировать</h1>
-    <p>(нажмите на экран)</p>
+    <div class="gradient-bg" id="bg"></div>
+
+    <div class="ui-content" id="ui">
+        <h1>RECONNECT</h1>
+        <p>TAP TO DOCK</p>
+    </div>
 
     <script>
-        function launch() {
-            // 1. Мгновенный магический звук (синтез)
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(2400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            } catch (e) { console.log(e); }
+        function activateNirvana() {
+            // 1. Магический звук (короткий и чистый)
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime); // Нота Ля
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 1);
+            g.gain.setValueAtTime(0.1, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 1);
 
-            // 2. Ссылка на видео (ID твоего видео про закат)
-            const vID = "S2r8_7lK_yY";
+            // 2. Визуальная активация
+            document.getElementById('bg').style.display = 'block';
+            document.getElementById('ui').classList.add('active-text');
+            document.getElementById('ui').querySelector('h1').innerText = "ENJOY YOUR TIME";
+            document.getElementById('ui').querySelector('p').innerText = "DEVICE ACTIVE";
             
-            // Пытаемся открыть сразу в полноэкранном режиме приложения
-            // Используем специальную схему для iOS
-            const appUrl = "vnd.youtube:" + vID + "?vndclient=mv-google&vndv=1";
-            const webUrl = "https://www.youtube.com/watch?v=" + vID;
-
-            // Переход
-            window.location.href = appUrl;
-
-            // Если приложение не открылось за полсекунды, открываем браузерную версию
-            setTimeout(function() {
-                if (!document.hidden) {
-                    window.location.replace(webUrl);
-                }
-            }, 500);
+            // Скрываем интерфейс через 3 секунды, чтобы оставить только чистый свет
+            setTimeout(() => {
+                document.getElementById('ui').style.opacity = '0.2';
+            }, 3000);
         }
     </script>
 </body>
