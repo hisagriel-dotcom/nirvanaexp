@@ -12,29 +12,29 @@
             font-family: -apple-system, sans-serif; cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
-        .ui { text-align: center; }
+        .ui { text-align: center; transition: opacity 0.5s; }
         .icon { font-size: 80px; margin-bottom: 10px; }
         h1 { font-size: 18px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
         video { display: none; width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body onclick="playVideo()">
+<body onclick="playMagic()">
 
     <div class="ui" id="ui">
         <div class="icon">✨</div>
         <h1>Активировать</h1>
     </div>
 
-    <video id="v" playsinline loop title="Sunset">
-        <source src="sunset.mp4" type="video/mp4">
+    <video id="v" playsinline loop>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-beautiful-aerial-view-of-a-sunset-over-the-ocean-13308-large.mp4" type="video/mp4">
     </video>
 
     <script>
-        function playVideo() {
+        function playMagic() {
             const v = document.getElementById('v');
             const ui = document.getElementById('ui');
 
-            // 1. Магический звук
+            // 1. Генерация магического звука
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -44,8 +44,10 @@
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.6);
 
-            // 2. Запуск видео
-            ui.style.display = 'none';
+            // 2. Скрываем текст и запускаем видео
+            ui.style.opacity = '0';
+            setTimeout(() => { ui.style.display = 'none'; }, 500);
+            
             v.style.display = 'block';
             v.play();
 
