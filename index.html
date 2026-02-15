@@ -3,82 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> </title>
+    <title> </title>
     <style>
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background-color: #ffffff; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             font-family: -apple-system, sans-serif; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        #player {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; /* Скрыто до клика */
-        }
-        .ui { text-align: center; z-index: 10; }
+        .ui { text-align: center; }
         .icon { font-size: 80px; margin-bottom: 10px; }
-        h1 { font-size: 20px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+        h1 { font-size: 18px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+        video { display: none; width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body onclick="launchExperience()">
+<body onclick="playVideo()">
 
-    <div class="ui" id="ui-element">
+    <div class="ui" id="ui">
         <div class="icon">✨</div>
         <h1>Активировать</h1>
     </div>
 
-    <div id="player"></div>
+    <video id="v" playsinline loop title="Sunset">
+        <source src="sunset.mp4" type="video/mp4">
+    </video>
 
     <script>
-        // Загрузка API YouTube
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        function playVideo() {
+            const v = document.getElementById('v');
+            const ui = document.getElementById('ui');
 
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: '29qJRbkvsk4', // Ваше видео с закатом
-                playerVars: { 
-                    'autoplay': 0, 
-                    'controls': 0, 
-                    'showinfo': 0, 
-                    'rel': 0, 
-                    'modestbranding': 1,
-                    'playsinline': 1 
-                }
-            });
-        }
-
-        function launchExperience() {
-            // 1. Синтезируем звук звона
+            // 1. Магический звук
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(2500, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.5);
+            osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.6);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
 
-            // 2. Показываем видео и запускаем его
-            document.getElementById('ui-element').style.display = 'none';
-            const playerDiv = document.getElementById('player');
-            playerDiv.style.display = 'block';
-            
-            player.playVideo();
+            // 2. Запуск видео
+            ui.style.display = 'none';
+            v.style.display = 'block';
+            v.play();
 
-            // 3. Пытаемся развернуть на весь экран (Fullscreen)
-            const requestFullScreen = playerDiv.requestFullscreen || playerDiv.webkitRequestFullscreen || playerDiv.mozRequestFullScreen || playerDiv.msRequestFullscreen;
-            if (requestFullScreen) {
-                requestFullScreen.call(playerDiv);
+            // 3. Хак для раскрытия на весь экран в iOS
+            if (v.webkitEnterFullscreen) {
+                v.webkitEnterFullscreen();
+            } else if (v.requestFullscreen) {
+                v.requestFullscreen();
             }
         }
     </script>
