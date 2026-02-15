@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magic NFC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nirvana Exp</title>
     <style>
-        /* Ослепительно белый фон */
+        /* Ослепительно белый фон для эффекта яркости */
         body { 
             background-color: #ffffff; 
             margin: 0; 
@@ -14,55 +14,56 @@
             align-items: center; 
             justify-content: center; 
             height: 100vh; 
-            font-family: -apple-system, sans-serif;
-            text-align: center;
-            cursor: pointer; /* Показывает, что на экран можно нажать */
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
         }
         
-        .icon {
-            font-size: 50px;
+        .icon { 
+            font-size: 80px; 
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.1));
         }
 
-        h1 { font-size: 18px; color: #888; font-weight: 400; }
+        h1 { 
+            font-size: 20px; 
+            color: #555; 
+            font-weight: 300; 
+            letter-spacing: 1px;
+        }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+        .hint {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #aaa;
         }
     </style>
 </head>
-<body onclick="activateMagic()">
+<body onclick="startExperience()">
 
     <div class="icon">✨</div>
-    <h1>Нажмите на экран для активации</h1>
+    <h1>АКТИВИРОВАТЬ</h1>
+    <div class="hint">(нажмите на экран)</div>
 
     <audio id="magicSound" preload="auto">
-        <source src="https://www.soundjay.com/magic/magic-chime-01.mp3" type="audio/mpeg">
+        <source src="https://actions.google.com/sounds/v1/foley/wind_chime_single.ogg" type="audio/ogg">
     </audio>
 
     <script>
-        function activateMagic() {
+        function startExperience() {
             const audio = document.getElementById("magicSound");
-            const youtubeURL = "youtube://www.youtube.com/watch?v=S2r8_7lK_yY";
-            const fallbackURL = "https://www.youtube.com/watch?v=S2r8_7lK_yY";
+            
+            // Прямая ссылка на ваше видео (Pastel Mood Lights)
+            const youtubeURL = "https://www.youtube.com/watch?v=29qJRbkvsk4"; 
 
-            // 1. Играем звук
-            audio.play();
+            // 1. Пытаемся воспроизвести звук
+            audio.play().catch(e => console.log("Sound error:", e));
 
-            // 2. Ждем 0.8 секунды, пока прозвенит колокольчик, и переходим
-            setTimeout(() => {
+            // 2. Небольшая пауза, чтобы звук начался, и переход в YouTube
+            setTimeout(function() {
                 window.location.href = youtubeURL;
-                
-                // Если через секунду мы все еще здесь (нет приложения YouTube), открываем в браузере
-                setTimeout(() => {
-                    if (!document.hidden) {
-                        window.location.href = fallbackURL;
-                    }
-                }, 1000);
-            }, 800);
+            }, 700);
         }
     </script>
 </body>
