@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,13 +7,13 @@
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: -apple-system, sans-serif;
+            overflow: hidden; font-family: -apple-system, "SF Pro Display", sans-serif;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; background: #ffffff;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Насыщенный неоновый градиент */
+        /* Vibrant Neon Gradient */
         #bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #ff0080, #7928ca, #0070f3, #00dfd8);
@@ -33,12 +33,16 @@
             transition: all 0.8s ease;
         }
 
-        h1 { font-weight: 600; font-size: 24px; color: #000; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        p { font-size: 16px; color: #444; line-height: 1.5; margin-bottom: 30px; }
+        h1 { font-weight: 600; font-size: 24px; color: #000; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        p { font-size: 16px; color: #444; line-height: 1.6; margin-bottom: 40px; font-weight: 300; }
+        b { font-weight: 600; color: #000; }
+        
         .btn-fake { 
-            display: inline-block; padding: 15px 40px; 
-            background: #000; color: #fff; border-radius: 30px; 
-            font-weight: 500; font-size: 14px;
+            display: inline-block; padding: 18px 45px; 
+            background: #000; color: #fff; border-radius: 40px; 
+            font-weight: 500; font-size: 13px; text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -47,9 +51,9 @@
     <div id="bg"></div>
 
     <div class="instruction" id="ui">
-        <h1>Почти готово</h1>
-        <p>Установите яркость экрана на <b>максимум</b>,<br>положите телефон внутрь корпуса<br>и коснитесь экрана для погружения.</p>
-        <div class="btn-fake">АКТИВИРОВАТЬ СВЕТ</div>
+        <h1>Almost Ready</h1>
+        <p>Set screen brightness to <b>maximum</b>,<br>place your device into the dock,<br>and tap the screen to immerse.</p>
+        <div class="btn-fake">Activate Light</div>
     </div>
 
     <script>
@@ -60,14 +64,14 @@
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
 
-            // Глубокий звук низкого бонга/чаши
+            // Deep meditative bong sound
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(110, ctx.currentTime); // Базовая частота
+            osc.frequency.setValueAtTime(110, ctx.currentTime); 
             osc.frequency.exponentialRampToValueAtTime(108, ctx.currentTime + 3);
 
             g.gain.setValueAtTime(0, ctx.currentTime);
-            g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1); // Плавная атака
-            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 10); // Длинное затухание
+            g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1); 
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 10); 
 
             osc.connect(g);
             g.connect(ctx.destination);
@@ -77,21 +81,19 @@
         }
 
         function startNirvana() {
-            // Если уже запущено — не перезапускать
             if (document.getElementById('bg').style.display === 'block') return;
 
-            // Скрываем текст и показываем градиент
+            // UI Fade out
             document.getElementById('ui').style.opacity = '0';
             setTimeout(() => { document.getElementById('ui').style.display = 'none'; }, 800);
 
+            // Background Fade in
             const bg = document.getElementById('bg');
             bg.style.display = 'block';
             setTimeout(() => { bg.style.opacity = '1'; }, 100);
 
-            // Запускаем первый звук
+            // Start sound loop
             playBong();
-
-            // Зацикливаем звук каждые 12 секунд
             loopInterval = setInterval(playBong, 12000);
         }
     </script>
