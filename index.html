@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirvana Exp</title>
+    <title> </title>
     <style>
-        /* Ослепительно белый фон для эффекта яркости */
         body { 
             background-color: #ffffff; 
             margin: 0; 
@@ -14,56 +13,58 @@
             align-items: center; 
             justify-content: center; 
             height: 100vh; 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, sans-serif;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
         }
-        
-        .icon { 
-            font-size: 80px; 
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.1));
-        }
-
-        h1 { 
-            font-size: 20px; 
-            color: #555; 
-            font-weight: 300; 
-            letter-spacing: 1px;
-        }
-
-        .hint {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #aaa;
-        }
+        .icon { font-size: 80px; margin-bottom: 20px; }
+        h1 { font-size: 22px; color: #333; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        .hint { color: #aaa; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
-<body onclick="startExperience()">
+<body onclick="startMagic()">
 
     <div class="icon">✨</div>
-    <h1>АКТИВИРОВАТЬ</h1>
+    <h1>Активировать</h1>
     <div class="hint">(нажмите на экран)</div>
 
-    <audio id="magicSound" preload="auto">
-        <source src="https://actions.google.com/sounds/v1/foley/wind_chime_single.ogg" type="audio/ogg">
-    </audio>
-
     <script>
-        function startExperience() {
-            const audio = document.getElementById("magicSound");
+        function startMagic() {
+            // 1. Звук магического звона (Base64 - загружен заранее в код)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             
-            // Прямая ссылка на ваше видео (Pastel Mood Lights)
-            const youtubeURL = "https://www.youtube.com/watch?v=29qJRbkvsk4"; 
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(2000, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1);
+            
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
 
-            // 1. Пытаемся воспроизвести звук
-            audio.play().catch(e => console.log("Sound error:", e));
+            // 2. Ссылка на видео (изменена на формат, который понимает приложение)
+            // Мы используем схему youtube:// для принудительного открытия приложения
+            const videoID = "29qJRbkvsk4";
+            const appUrl = "youtube://www.youtube.com/watch?v=" + videoID;
+            const webUrl = "https://www.youtube.com/watch?v=" + videoID;
 
-            // 2. Небольшая пауза, чтобы звук начался, и переход в YouTube
+            // 3. Пытаемся открыть приложение, если не выйдет - откроем браузер
             setTimeout(function() {
-                window.location.href = youtubeURL;
-            }, 700);
+                window.location.href = appUrl;
+                
+                // Запасной вариант через 500мс
+                setTimeout(function() {
+                    if (!document.hidden) {
+                        window.location.href = webUrl;
+                    }
+                }, 500);
+            }, 100);
         }
     </script>
 </body>
