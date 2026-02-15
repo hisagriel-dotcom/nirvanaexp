@@ -5,66 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title> </title>
     <style>
-        body { 
-            background-color: #ffffff; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            font-family: -apple-system, sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #ffffff; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-family: -apple-system, sans-serif; cursor: pointer;
         }
-        .icon { font-size: 80px; margin-bottom: 20px; }
-        h1 { font-size: 22px; color: #333; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
-        .hint { color: #aaa; margin-top: 10px; font-size: 14px; }
+        #player {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; /* Скрыто до клика */
+        }
+        .ui { text-align: center; z-index: 10; }
+        .icon { font-size: 80px; margin-bottom: 10px; }
+        h1 { font-size: 20px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
-<body onclick="startMagic()">
+<body onclick="launchExperience()">
 
-    <div class="icon">✨</div>
-    <h1>Активировать</h1>
-    <div class="hint">(нажмите на экран)</div>
+    <div class="ui" id="ui-element">
+        <div class="icon">✨</div>
+        <h1>Активировать</h1>
+    </div>
+
+    <div id="player"></div>
 
     <script>
-        function startMagic() {
-            // 1. Звук магического звона (Base64 - загружен заранее в код)
+        // Загрузка API YouTube
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: '29qJRbkvsk4', // Ваше видео с закатом
+                playerVars: { 
+                    'autoplay': 0, 
+                    'controls': 0, 
+                    'showinfo': 0, 
+                    'rel': 0, 
+                    'modestbranding': 1,
+                    'playsinline': 1 
+                }
+            });
+        }
+
+        function launchExperience() {
+            // 1. Синтезируем звук звона
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(2000, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1);
-            
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
-            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(2500, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
             osc.start();
-            osc.stop(audioCtx.currentTime + 1);
+            osc.stop(audioCtx.currentTime + 0.5);
 
-            // 2. Ссылка на видео (изменена на формат, который понимает приложение)
-            // Мы используем схему youtube:// для принудительного открытия приложения
-            const videoID = "29qJRbkvsk4";
-            const appUrl = "youtube://www.youtube.com/watch?v=" + videoID;
-            const webUrl = "https://www.youtube.com/watch?v=" + videoID;
+            // 2. Показываем видео и запускаем его
+            document.getElementById('ui-element').style.display = 'none';
+            const playerDiv = document.getElementById('player');
+            playerDiv.style.display = 'block';
+            
+            player.playVideo();
 
-            // 3. Пытаемся открыть приложение, если не выйдет - откроем браузер
-            setTimeout(function() {
-                window.location.href = appUrl;
-                
-                // Запасной вариант через 500мс
-                setTimeout(function() {
-                    if (!document.hidden) {
-                        window.location.href = webUrl;
-                    }
-                }, 500);
-            }, 100);
+            // 3. Пытаемся развернуть на весь экран (Fullscreen)
+            const requestFullScreen = playerDiv.requestFullscreen || playerDiv.webkitRequestFullscreen || playerDiv.mozRequestFullScreen || playerDiv.msRequestFullscreen;
+            if (requestFullScreen) {
+                requestFullScreen.call(playerDiv);
+            }
         }
     </script>
 </body>
